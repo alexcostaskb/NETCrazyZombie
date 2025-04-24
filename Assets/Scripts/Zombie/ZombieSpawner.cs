@@ -1,22 +1,22 @@
-using System.Collections;
-using UnityEngine;
 using Unity.Netcode;
-using System;
+using UnityEngine;
 
 public class ZombieSpawner : NetworkBehaviour
 {
     [Header("References")]
-    [SerializeField] GameObject zombie;
+    [SerializeField] private GameObject zombie;
 
     [Header("Settings")]
-    [SerializeField] float spawnDelay;
-    [SerializeField] int zombieMax;
+    [SerializeField] private float spawnDelay;
 
-    int numZombies = 0;
+    [SerializeField] private int zombieMax;
+
+    private int numZombies = 0;
 
     public override void OnNetworkSpawn()
     {
-        if(IsServer){
+        if (IsServer)
+        {
             InvokeRepeating(nameof(SpawnZombieRpc), 2f, spawnDelay);
         }
     }
@@ -33,13 +33,16 @@ public class ZombieSpawner : NetworkBehaviour
     [Rpc(SendTo.Server)]
     private void SpawnZombieRpc()
     {
-        if (!IsServer) return;
-        
+        if (!IsServer)
+        {
+            return;
+        }
+
         if (numZombies < zombieMax)
         {
             GameObject enemy = Instantiate(zombie, transform.position, Quaternion.identity);
             enemy.GetComponent<NetworkObject>().Spawn();
-            numZombies++;   
+            numZombies++;
         }
     }
 }

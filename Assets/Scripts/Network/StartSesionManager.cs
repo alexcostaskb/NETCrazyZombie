@@ -5,12 +5,12 @@ public class StartSesionManager : MonoBehaviour
 {
     private static NetworkManager m_NetworkManager;
 
-    void Awake()
+    private void Awake()
     {
         m_NetworkManager = GetComponent<NetworkManager>();
     }
 
-    void OnGUI()
+    private void OnGUI()
     {
         GUILayout.BeginArea(new Rect(100, 70, 300, 300));
         if (!m_NetworkManager.IsClient && !m_NetworkManager.IsServer)
@@ -27,20 +27,35 @@ public class StartSesionManager : MonoBehaviour
         GUILayout.EndArea();
     }
 
-    static void StartButtons()
+    /// <summary>
+    /// crea los botones para iniciar el host, cliente o servidor
+    /// </summary>
+    private static void StartButtons()
     {
-        if (GUILayout.Button("Host")) m_NetworkManager.StartHost();
-        if (GUILayout.Button("Client")) m_NetworkManager.StartClient();
-        if (GUILayout.Button("Server")) m_NetworkManager.StartServer();
+        if (GUILayout.Button("Host"))
+        {
+            m_NetworkManager.StartHost();
+        }
+
+        if (GUILayout.Button("Client"))
+        {
+            m_NetworkManager.StartClient();
+        }
+
+        if (GUILayout.Button("Server"))
+        {
+            m_NetworkManager.StartServer();
+        }
     }
 
-    static void StatusLabels()
+    /// <summary>
+    /// Muestra el estado de la conexión y el modo de red actual.
+    /// </summary>
+    private static void StatusLabels()
     {
-        var mode = m_NetworkManager.IsHost ?
-            "Host" : m_NetworkManager.IsServer ? "Server" : "Client";
+        var mode = m_NetworkManager.IsHost ? "Host" : m_NetworkManager.IsServer ? "Server" : "Client";
 
-        GUILayout.Label("Transport: " +
-            m_NetworkManager.NetworkConfig.NetworkTransport.GetType().Name);
+        GUILayout.Label("Transport: " + m_NetworkManager.NetworkConfig.NetworkTransport.GetType().Name);
         GUILayout.Label("Mode: " + mode);
     }
 

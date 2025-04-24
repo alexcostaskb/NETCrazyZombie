@@ -1,17 +1,22 @@
-using UnityEngine;
 using Unity.Netcode;
+using UnityEngine;
 
 public class ZombieBite : NetworkBehaviour
 {
     public const int PLAYER_DAMAGE = 10;
-    void OnCollisionStay(Collision other)
+
+    /// <summary>
+    /// Cuando el zombie colisiona con el jugador, se aplica daño al jugador.
+    /// </summary>
+    /// <param name="other"></param>
+    private void OnCollisionStay(Collision other)
     {
         if (other.gameObject.CompareTag("Player"))
         {
-            if(IsServer){
+            if (IsServer)
+            {
                 other.gameObject.GetComponent<PlayerManager>().ApplyDamageRpc(PLAYER_DAMAGE);
             }
         }
     }
-    
 }

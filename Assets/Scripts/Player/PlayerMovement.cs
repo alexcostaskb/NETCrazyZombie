@@ -1,18 +1,21 @@
-using UnityEngine;
 using Unity.Netcode;
+using UnityEngine;
 
 public class PlayerMovement : NetworkBehaviour
 {
     [Header("References")]
-
     [Header("Settings")]
-    [SerializeField] float speed;
-    [SerializeField] float jumpForce;
+    [SerializeField] private float speed;
 
-    Rigidbody rb;
-    CapsuleCollider col;
+    [SerializeField] private float jumpForce;
 
-    public override void  OnNetworkSpawn()
+    private Rigidbody rb;
+    private CapsuleCollider col;
+
+    /// <summary>
+    /// Se ejecuta cuando el objeto se genera en la red. Se utiliza para inicializar el Rigidbody y el CapsuleCollider.
+    /// </summary>
+    public override void OnNetworkSpawn()
     {
         Cursor.lockState = CursorLockMode.Locked;
 
@@ -20,9 +23,15 @@ public class PlayerMovement : NetworkBehaviour
         col = GetComponent<CapsuleCollider>();
     }
 
-    void Update()
-    {  
-        if(!IsOwner) return;
+    /// <summary>
+    /// Método Update se ejecuta una vez por frame. Se utiliza para manejar la entrada del jugador y el movimiento.
+    /// </summary>
+    private void Update()
+    {
+        if (!IsOwner)
+        {
+            return;
+        }
 
         // desplazamiento del jugador
         Vector2 moveInput = Vector2.zero;
@@ -35,8 +44,8 @@ public class PlayerMovement : NetworkBehaviour
         // salto del jugador
         if (Input.GetButtonDown("Jump"))
         {
-            JumpRpc();        
-        }     
+            JumpRpc();
+        }
 
         // liberar el cursor al presionar la tecla ESC
         if (Input.GetKeyDown(KeyCode.Escape))
@@ -45,20 +54,35 @@ public class PlayerMovement : NetworkBehaviour
         }
     }
 
+    /// <summary>
+    /// Se encarga de mover al jugador en la red. Se llama desde el cliente y se ejecuta en el servidor.
+    /// </summary>
+    /// <param name="moveInput"></param>
+
     [Rpc(SendTo.Server)]
-    void TranslateRpc(Vector2 moveInput)
+    private void TranslateRpc(Vector2 moveInput)
     {
         transform.Translate(moveInput.x, 0, moveInput.y);
     }
 
+    /// <summary>
+    /// Se encarga de saltar al jugador en la red. Se llama desde el cliente y se ejecuta en el servidor.
+    /// </summary>
+
     [Rpc(SendTo.Server)]
-    void JumpRpc()
+    private void JumpRpc()
     {
-        if(IsGrounded())
+        if (IsGrounded())
+        {
             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+        }
     }
 
-    bool IsGrounded()
+    /// <summary>
+    /// Verifica si el jugador está en el suelo. Se utiliza un raycast para detectar la colisión con el suelo.
+    /// </summary>
+    /// <returns></returns>
+    private bool IsGrounded()
     {
         // raycast para detectar si el jugador está tocando el suelo
         return Physics.Raycast(transform.position, Vector3.down, col.bounds.extents.y + 0.1f);

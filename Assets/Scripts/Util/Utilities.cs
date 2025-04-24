@@ -5,13 +5,14 @@ using UnityEngine;
 
 public static class Utilities
 {
-    static readonly string[] s_Usernames = new string[] { "MaryDaBest", "BobTheBell", "FranklyVal", "Georgie96", "OP Morgan" };
+    private static readonly string[] s_Usernames = new string[] { "MaryDaBest", "BobTheBell", "FranklyVal", "Georgie96", "OP Morgan" };
 
     /// <summary>
     /// Generates a random color
     /// </summary>
     /// <returns>A random RGBA color</returns>
     public static Color32 GetRandomColor() => new Color32((byte)UnityEngine.Random.Range(0, 256), (byte)UnityEngine.Random.Range(0, 256), (byte)UnityEngine.Random.Range(0, 256), 255);
+
     public static string GetRandomUsername() => s_Usernames[UnityEngine.Random.Range(0, s_Usernames.Length)];
 
     /// <summary>
@@ -22,13 +23,14 @@ public static class Utilities
     public static string FilterBadWords(string input)
     {
         Regex regex = new Regex(@"\b(\w+)\b", RegexOptions.Compiled);
+
         var replacements = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
-            {
-                {"potato", "*****"},
-                {"duck", "@%!$"},
-                {"pineapple", "$*%*!"}
-            };
-        return regex.Replace(input, match => replacements.ContainsKey(match.Groups[1].Value) ? replacements[match.Groups[1].Value]
-                                                                                             : match.Groups[1].Value);
+        {
+            {"potato", "*****"},
+            {"duck", "@%!$"},
+            {"pineapple", "$*%*!"}
+        };
+
+        return regex.Replace(input, match => replacements.ContainsKey(match.Groups[1].Value) ? replacements[match.Groups[1].Value] : match.Groups[1].Value);
     }
 }
